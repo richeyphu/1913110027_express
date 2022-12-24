@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const staffController = require("../controllers/staffController");
 
-// Get user listing
+// Get staff listing
 router.get("/", staffController.index);
 
 /* http://localhost:3000/staff/63942c0bb2f62e665402908f */
