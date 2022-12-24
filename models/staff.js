@@ -5,7 +5,7 @@ const staffSchema = new Schema(
   {
     name: { type: String, required: true, trim: true },
     salary: { type: Number },
-    created: {type: Date, default: Date.now},
+    created: { type: Date, default: Date.now },
   },
   { collection: "staffs" }
 );
