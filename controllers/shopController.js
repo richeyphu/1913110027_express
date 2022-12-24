@@ -21,9 +21,20 @@ exports.index = async (req, res, next) => {
 };
 
 exports.menu = async (req, res, next) => {
-  const menus = await Menu.find().populate("shop", "name");
+  // const menus = await Menu.find().select("+name -price");
+  // const menus = await Menu.find().where("price").gt(100);
+
+  const menus = await Menu.find().populate("shop");
 
   res.status(200).json({
     data: menus,
+  });
+};
+
+exports.show = async (req, res, next) => {
+  const shop = await Shop.findById(req.params.id).populate("menus");
+
+  res.status(200).json({
+    data: shop,
   });
 };
