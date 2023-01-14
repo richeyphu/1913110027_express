@@ -9,56 +9,72 @@ const Menu = require("../models/menu");
 const config = require("../config");
 
 exports.index = async (req, res, next) => {
-  const shops = await Shop.find()
-    .select("name photo location")
-    .sort({ _id: -1 });
+  try {
+    const shops = await Shop.find()
+      .select("name photo location")
+      .sort({ _id: -1 });
 
-  const shopWithPhotoDomain = shops.map((shop, index) => {
-    return {
-      id: shop._id,
-      name: shop.name,
-      photo: `${config.DOMAIN}/images/${shop.photo}`,
-      location: shop.location,
-    };
-  });
+    const shopWithPhotoDomain = shops.map((shop, index) => {
+      return {
+        id: shop._id,
+        name: shop.name,
+        photo: `${config.DOMAIN}/images/${shop.photo}`,
+        location: shop.location,
+      };
+    });
 
-  res.status(200).json({
-    data: shopWithPhotoDomain,
-  });
+    res.status(200).json({
+      data: shopWithPhotoDomain,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.menu = async (req, res, next) => {
-  // const menus = await Menu.find().select("+name -price");
-  // const menus = await Menu.find().where("price").gt(100);
+  try {
+    // const menus = await Menu.find().select("+name -price");
+    // const menus = await Menu.find().where("price").gt(100);
 
-  const menus = await Menu.find().populate("shop");
+    const menus = await Menu.find().populate("shop");
 
-  res.status(200).json({
-    data: menus,
-  });
+    res.status(200).json({
+      data: menus,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.show = async (req, res, next) => {
-  const shop = await Shop.findById(req.params.id).populate("menus");
+  try {
+    const shop = await Shop.findById(req.params.id).populate("menus");
 
-  res.status(200).json({
-    data: shop,
-  });
+    res.status(200).json({
+      data: shop,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.insert = async (req, res, next) => {
-  const { name, location, photo } = req.body;
+  try {
+    const { name, location, photo } = req.body;
 
-  let shop = new Shop({
-    name: name,
-    location: location,
-    photo: photo && (await saveImageToDisk(photo)),
-  });
-  await shop.save();
+    let shop = new Shop({
+      name: name,
+      location: location,
+      photo: photo && (await saveImageToDisk(photo)),
+    });
+    await shop.save();
 
-  res.status(201).json({
-    message: "เพิ่มข้อมูลเรียบร้อยแล้ว",
-  });
+    res.status(201).json({
+      message: "เพิ่มข้อมูลเรียบร้อยแล้ว",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 async function saveImageToDisk(baseImage) {

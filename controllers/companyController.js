@@ -1,11 +1,15 @@
 const Company = require("../models/company");
 
 exports.index = async (req, res, next) => {
-  const company = await Company.find().sort({ _id: -1 });
+  try {
+    const company = await Company.find().sort({ _id: -1 });
 
-  res.status(200).json({
-    data: company,
-  });
+    res.status(200).json({
+      data: company,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.show = async (req, res, next) => {
@@ -17,31 +21,35 @@ exports.show = async (req, res, next) => {
     });
 
     if (!company) {
-      throw new Error("ไม่พบบริษัท");
+      const error = new Error("ไม่พบบริษัท");
+      error.statusCode = 400;
+      throw error;
     } else {
       res.status(200).json({
         data: company,
       });
     }
   } catch (error) {
-    res.status(400).json({
-      error: { message: "เกิดข้อผิดพลาด : " + error.message },
-    });
+    next(error);
   }
 };
 
 exports.insert = async (req, res, next) => {
-  const { name, address } = req.body;
+  try {
+    const { name, address } = req.body;
 
-  let company = new Company({
-    name: name,
-    address: address,
-  });
-  await company.save();
+    let company = new Company({
+      name: name,
+      address: address,
+    });
+    await company.save();
 
-  res.status(201).json({
-    message: "เพิ่มข้อมูลเรียบร้อยแล้ว",
-  });
+    res.status(201).json({
+      message: "เพิ่มข้อมูลเรียบร้อยแล้ว",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.destroy = async (req, res, next) => {
@@ -53,16 +61,16 @@ exports.destroy = async (req, res, next) => {
     });
 
     if (company.deletedCount === 0) {
-      throw new Error("ไม่สามารถลบข้อมูลได้ / ไม่พบบริษัท");
+      const error = new Error("ไม่สามารถลบข้อมูลได้ / ไม่พบบริษัท");
+      error.statusCode = 400;
+      throw error;
     } else {
       res.status(200).json({
         message: "ลบข้อมูลเรียบร้อยแล้ว",
       });
     }
   } catch (error) {
-    res.status(400).json({
-      error: { message: "เกิดข้อผิดพลาด : " + error.message },
-    });
+    next(error);
   }
 };
 
@@ -80,15 +88,15 @@ exports.update = async (req, res, next) => {
     );
 
     if (company.nModified === 0) {
-      throw new Error("ไม่สามารถแก้ไขข้อมูลได้ / ไม่พบบริษัท");
+      const error = new Error("ไม่สามารถแก้ไขข้อมูลได้ / ไม่พบบริษัท");
+      error.statusCode = 400;
+      throw error;
     } else {
       res.status(200).json({
         message: "แก้ไขข้อมูลเรียบร้อยแล้ว",
       });
     }
   } catch (error) {
-    res.status(400).json({
-      error: { message: "เกิดข้อผิดพลาด : " + error.message },
-    });
+    next(error);
   }
 };

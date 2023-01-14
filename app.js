@@ -6,10 +6,12 @@ const mongoose = require("mongoose");
 const config = require("./config");
 
 const indexRouter = require("./routes/index");
-const usersRouter = require("./routes/users");
+const usersRouter = require("./routes/user");
 const companyRouter = require("./routes/company");
 const staffRouter = require("./routes/staff");
 const shopRouter = require("./routes/shop");
+
+const errorHandle = require("./middleware/errorHandle");
 
 const app = express();
 
@@ -29,9 +31,11 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
-app.use("/users", usersRouter);
+app.use("/user", usersRouter);
 app.use("/company", companyRouter);
 app.use("/staff", staffRouter);
 app.use("/shop", shopRouter);
+
+app.use(errorHandle);
 
 module.exports = app;

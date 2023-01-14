@@ -8,18 +8,22 @@ const Staff = require("../models/staff");
 const config = require("../config");
 
 exports.index = async (req, res, next) => {
-  const staff = await Staff.find().sort({ _id: -1 });
+  try {
+    const staff = await Staff.find().sort({ _id: -1 });
 
-  const staffWithPhotoDomain = staff.map((staff, index) => {
-    return {
-      name: staff.name,
-      photo: `${config.DOMAIN}/images/${staff.photo}`,
-    };
-  });
+    const staffWithPhotoDomain = staff.map((staff, index) => {
+      return {
+        name: staff.name,
+        photo: `${config.DOMAIN}/images/${staff.photo}`,
+      };
+    });
 
-  res.status(200).json({
-    data: staffWithPhotoDomain,
-  });
+    res.status(200).json({
+      data: staffWithPhotoDomain,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.show = async (req, res, next) => {
@@ -34,32 +38,36 @@ exports.show = async (req, res, next) => {
     });
 
     if (!staff) {
-      throw new Error("ไม่พบผู้ใช้งาน");
+      const error = new Error("ไม่พบผู้ใช้งาน");
+      error.statusCode = 404;
+      throw error;
     } else {
       res.status(200).json({
         data: staff,
       });
     }
   } catch (error) {
-    res.status(400).json({
-      error: { message: "เกิดข้อผิดพลาด : " + error.message },
-    });
+    next(error);
   }
 };
 
 exports.insert = async (req, res, next) => {
-  const { name, salary, photo } = req.body;
+  try {
+    const { name, salary, photo } = req.body;
 
-  let staff = new Staff({
-    name: name,
-    salary: salary,
-    photo: photo && (await saveImageToDisk(photo)),
-  });
-  await staff.save();
+    let staff = new Staff({
+      name: name,
+      salary: salary,
+      photo: photo && (await saveImageToDisk(photo)),
+    });
+    await staff.save();
 
-  res.status(201).json({
-    message: "เพิ่มข้อมูลเรียบร้อยแล้ว",
-  });
+    res.status(201).json({
+      message: "เพิ่มข้อมูลเรียบร้อยแล้ว",
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 exports.destroy = async (req, res, next) => {
@@ -71,16 +79,16 @@ exports.destroy = async (req, res, next) => {
     });
 
     if (staff.deletedCount === 0) {
-      throw new Error("ไม่สามารถลบข้อมูลได้ / ไม่พบผู้ใช้งาน");
+      const error = new Error("ไม่สามารถลบข้อมูลได้ / ไม่พบผู้ใช้งาน");
+      error.statusCode = 400;
+      throw error;
     } else {
       res.status(200).json({
         message: "ลบข้อมูลเรียบร้อยแล้ว",
       });
     }
   } catch (error) {
-    res.status(400).json({
-      error: { message: "เกิดข้อผิดพลาด : " + error.message },
-    });
+    next(error);
   }
 };
 
@@ -108,16 +116,16 @@ exports.update = async (req, res, next) => {
     );
 
     if (staff.nModified === 0) {
-      throw new Error("ไม่สามารถแก้ไขข้อมูลได้ / ไม่พบผู้ใช้งาน");
+      const error = new Error("ไม่สามารถแก้ไขข้อมูลได้ / ไม่พบผู้ใช้งาน");
+      error.statusCode = 400;
+      throw error;
     } else {
       res.status(200).json({
         message: "แก้ไขข้อมูลเรียบร้อยแล้ว",
       });
     }
   } catch (error) {
-    res.status(400).json({
-      error: { message: "เกิดข้อผิดพลาด : " + error.message },
-    });
+    next(error);
   }
 };
 
