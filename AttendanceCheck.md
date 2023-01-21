@@ -1,1 +1,1 @@
-Phurit (Phu): Chapter 7 - Node.js Environment with Login
+Phurit (Phu): Chapter 8 - Login with JSON WEB TOKEN
