@@ -22,7 +22,7 @@ const schema = new Schema(
       trim: true,
       minlength: 5,
     },
-    roles: {
+    role: {
       type: String,
       default: "member",
     },
@@ -36,6 +36,11 @@ schema.methods.encryptPassword = async (password) => {
   const salt = await bcrypt.genSalt(5);
   const hashPassword = bcrypt.hash(password, salt);
   return hashPassword;
+};
+
+schema.methods.checkPassword = async function (password) {
+  const isValid = await bcrypt.compare(password, this.password);
+  return isValid;
 };
 
 const user = mongoose.model("User", schema);
