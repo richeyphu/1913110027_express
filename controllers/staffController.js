@@ -3,6 +3,7 @@ const path = require("path");
 const uuidv4 = require("uuid");
 const { promisify } = require("util");
 const writeFileAsync = promisify(fs.writeFile);
+const { validationResult } = require("express-validator");
 
 const Staff = require("../models/staff");
 const config = require("../config");
@@ -54,6 +55,15 @@ exports.show = async (req, res, next) => {
 exports.insert = async (req, res, next) => {
   try {
     const { name, salary, photo } = req.body;
+
+    // validation
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("ข้อมูลที่ได้รับมาไม่ถูกต้อง");
+      error.statusCode = 422;
+      error.validation = errors.array();
+      throw error;
+    }
 
     let staff = new Staff({
       name: name,
