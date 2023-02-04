@@ -1,1 +1,1 @@
-Phurit (Phu): Chapter 8 - Login with JSON WEB TOKEN
+Phurit (Phu): Chapter 9 - User Authentication
