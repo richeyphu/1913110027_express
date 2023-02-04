@@ -86,7 +86,7 @@ exports.login = async (req, res, next) => {
     const token = await jwt.sign(
       {
         id: user._id,
-        role: user.role,
+        // role: user.role,
       },
       config.JWT_SECRET,
       {
@@ -104,4 +104,11 @@ exports.login = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+exports.profile = (req, res, next) => {
+  const { role, name, email } = req.user;
+  res.status(200).json({
+    user: { name, email, role },
+  });
 };
