@@ -82,7 +82,7 @@ exports.login = async (req, res, next) => {
       throw error;
     }
 
-    // token
+    // create token
     const token = await jwt.sign(
       {
         id: user._id,
