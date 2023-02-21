@@ -18,7 +18,7 @@ router.post(
       .withMessage("กรุณาป้อนละติจูดด้วย")
       .isNumeric()
       .withMessage("ละติจูดต้องเป็นตัวเลขเท่านั้น"),
-    body("location.lgn")
+    body("location.lng")
       .not()
       .isEmpty()
       .withMessage("กรุณาป้อนลองจิจูดด้วย")
